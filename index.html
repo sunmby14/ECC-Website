@@ -206,9 +206,39 @@ footer p{font-size:12px;line-height:1.8}
 .ft-social a:hover{border-color:#6DD9A0;color:#6DD9A0}
 
 /* RESPONSIVE */
+/* HAMBURGER */
+.hamburger{display:none;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:40px;height:40px;cursor:pointer;border-radius:8px;border:none;background:transparent;padding:6px}
+.hamburger span{display:block;width:22px;height:2px;background:var(--teal-dark);border-radius:2px;transition:all .3s ease}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+/* MOBILE DRAWER */
+.mobile-menu{
+  display:none;position:fixed;top:64px;left:0;right:0;bottom:0;
+  background:rgba(8,53,64,0.97);backdrop-filter:blur(8px);
+  z-index:99;flex-direction:column;align-items:center;justify-content:center;gap:0;
+  animation:slideDown .25s ease;
+}
+.mobile-menu.open{display:flex}
+@keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.mobile-menu a{
+  font-size:18px;font-weight:500;color:rgba(255,255,255,.8);
+  letter-spacing:1px;text-transform:uppercase;
+  padding:1.1rem 2rem;width:100%;text-align:center;cursor:pointer;
+  border-bottom:1px solid rgba(255,255,255,.07);transition:color .2s,background .2s;
+}
+.mobile-menu a:hover,.mobile-menu a.active{color:#6DD9A0;background:rgba(255,255,255,.05)}
+.mobile-menu a.mob-cta{
+  margin-top:1rem;background:var(--teal);color:#fff!important;
+  border-radius:30px;width:auto;padding:.75rem 2.5rem;border:none;
+}
+.mobile-menu a.mob-cta:hover{background:var(--green)}
+
 @media(max-width:768px){
-  .hero h1{font-size:32px}
+  .hero h1{font-size:30px}
   .nav-links{display:none}
+  .hamburger{display:flex}
   .about-grid,.contact-grid{grid-template-columns:1fr}
   .arms-grid,.team-grid,.values-grid,.res-grid{grid-template-columns:repeat(2,1fr)}
   .mission-pillars{grid-template-columns:1fr}
@@ -240,7 +270,23 @@ footer p{font-size:12px;line-height:1.8}
     <a onclick="showSection('resources')" id="nav-resources">Resources</a>
     <a onclick="showSection('contact')" id="nav-contact" class="nav-cta">Contact Us</a>
   </div>
+  <!-- Hamburger button (mobile only) -->
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<!-- Mobile Drawer Menu -->
+<div class="mobile-menu" id="mobile-menu">
+  <a onclick="showSection('home');closeMenu()" id="mob-home">Home</a>
+  <a onclick="showSection('about');closeMenu()" id="mob-about">About Us</a>
+  <a onclick="showSection('vision');closeMenu()" id="mob-vision">Our Vision</a>
+  <a onclick="showSection('arms');closeMenu()" id="mob-arms">Our Arms</a>
+  <a onclick="showSection('team');closeMenu()" id="mob-team">The Team</a>
+  <a onclick="showSection('programs');closeMenu()" id="mob-programs">Programs</a>
+  <a onclick="showSection('resources');closeMenu()" id="mob-resources">Resources</a>
+  <a onclick="showSection('contact');closeMenu()" class="mob-cta">Contact Us</a>
+</div>
 
 <!-- HOME -->
 <div class="section active" id="sec-home">
@@ -650,12 +696,30 @@ function filterRes(type,el){
   renderRes(type);
 }
 
+function toggleMenu(){
+  const btn=document.getElementById('hamburger');
+  const menu=document.getElementById('mobile-menu');
+  btn.classList.toggle('open');
+  menu.classList.toggle('open');
+  document.body.style.overflow=menu.classList.contains('open')?'hidden':'';
+}
+
+function closeMenu(){
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('mobile-menu').classList.remove('open');
+  document.body.style.overflow='';
+}
+
 function showSection(id){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.getElementById('sec-'+id).classList.add('active');
   document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
   const navEl=document.getElementById('nav-'+id);
   if(navEl) navEl.classList.add('active');
+  // Update mobile menu active state
+  document.querySelectorAll('.mobile-menu a').forEach(a=>a.classList.remove('active'));
+  const mobEl=document.getElementById('mob-'+id);
+  if(mobEl) mobEl.classList.add('active');
   window.scrollTo(0,0);
 }
 
